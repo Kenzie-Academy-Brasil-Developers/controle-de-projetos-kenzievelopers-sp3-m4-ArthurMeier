@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
-import { IDeveloper } from "./interfaces";
-import { client } from "./database";
+import { IDeveloper, IDeveloperInfo } from "../intefaces/developer.interfaces";
+import { client } from "../database";
 
 const verifyEmailExists = async (
   req: Request,
@@ -14,7 +14,7 @@ const verifyEmailExists = async (
     SELECT
         email
     FROM
-        movies
+        developers
     WHERE
         email = $1;
     `;
@@ -52,6 +52,7 @@ const verifyIdExist = async (
       WHERE
           id=$1;
       `;
+
   const queryConfig: QueryConfig = {
     text: queryString,
     values: [id],
@@ -66,4 +67,53 @@ const verifyIdExist = async (
   return next();
 };
 
-export { verifyEmailExists, verifyIdExist };
+const verifyInfoExists = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id: number = parseInt(req.params.id);
+
+  const queryString: string = `
+      SELECT
+          *
+      FROM
+          developer_infos
+      WHERE
+          develeprId=$1;
+      `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [id],
+  };
+
+  const queryResult: QueryResult<IDeveloperInfo> = await client.query(
+    queryConfig
+  );
+
+  if (queryResult.rowCount === 0) {
+    return next();
+  }
+
+  return res.status(409).json({ message: "Developer infos already exists." });
+};
+
+const verifyOS = async (req: Request, res: Response, next: NextFunction) => {
+  const { preferedOS } = req.body;
+
+  if (
+    preferedOS === "Windows" ||
+    preferedOS === "Linux" ||
+    preferedOS === "MacOS"
+  ) {
+    return next();
+  }
+
+  return res.status(400).json({
+    message: "Invalid OS option.",
+    options: ["Windows", "Linux", "MacOS"],
+  });
+};
+
+export { verifyEmailExists, verifyIdExist, verifyInfoExists, verifyOS };
