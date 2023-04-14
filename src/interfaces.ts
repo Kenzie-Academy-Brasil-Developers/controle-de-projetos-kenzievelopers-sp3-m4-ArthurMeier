@@ -1,0 +1,48 @@
+// Interface para a tabela "developers"
+interface IDeveloper {
+  id: number;
+  name: string;
+  email: string;
+}
+
+type CreateDeveloper = Omit<IDeveloper, "id">;
+
+// Interface para a tabela "developer_infos"
+interface IDeveloperInfo {
+  id: number;
+  developerSince: Date;
+  preferredOS: "Windows" | "Linux" | "MacOS";
+  developerId: number;
+}
+
+// Interface para a tabela "projects"
+interface IProject {
+  id: number;
+  name: string;
+  description: string | null;
+  estimatedTime: string;
+  repository: string;
+  startDate: Date;
+  endDate: Date | null;
+  developerId: number | null;
+}
+
+// Interface para a tabela "technologies"
+type TTechnology = Omit<IDeveloper, "email">;
+
+// Interface para a tabela "projects_technologies"
+interface IProjectTechnology {
+  id: number;
+  addedIn: Date;
+  technologyId: number;
+  projectId: number;
+}
+
+export {
+  IDeveloper,
+  CreateDeveloper,
+  IDeveloperInfo,
+  IProject,
+  TTechnology,
+  IProjectTechnology,
+};
