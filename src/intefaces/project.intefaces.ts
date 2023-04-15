@@ -11,6 +11,8 @@ interface IProject {
   developerId: number | null;
 }
 
+type CreateProject = Omit<IProject, "id">;
+
 // Interface para a tabela "technologies"
 type TTechnology = Omit<IDeveloper, "email">;
 
@@ -22,4 +24,4 @@ interface IProjectTechnology {
   projectId: number;
 }
 
-export { IProject, TTechnology, IProjectTechnology };
+export { IProject, TTechnology, IProjectTechnology, CreateProject };
