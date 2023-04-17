@@ -33,13 +33,13 @@ const getProjects = async (req: Request, res: Response): Promise<Response> => {
   const queryString: string = `
         SELECT
             pj."projectId",
-            pj."projectName",
-            pj."projectDescription",
-            pj."projectEstimatedTime",
-            pj."projectRepository"
-            pj."projectStartDate"
-            pj."projectEndDate"
-            pj."projectDeveloperId"
+            pj."Name",
+            pj."Description",
+            pj."EstimatedTime",
+            pj."Repository"
+            pj."StartDate"
+            pj."EndDate"
+            pj."DeveloperId"
             pt."technologyId"
             tc."technologyName"
         FROM 

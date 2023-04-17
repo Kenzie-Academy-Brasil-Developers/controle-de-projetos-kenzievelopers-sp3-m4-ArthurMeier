@@ -4,14 +4,15 @@ CREATE TABLE IF NOT EXISTS developers (
     email VARCHAR(50) NOT NULL UNIQUE
 );
 
+CREATE TYPE os_type AS ENUM ('Windows', 'Linux', 'MacOS');
+
 CREATE TABLE IF NOT EXISTS developer_infos (
     id SERIAL PRIMARY KEY,
     developerSince DATE NOT NULL,
-    preferredOS ENUM('Windows', 'Linux', 'MacOS') NOT NULL,
+    preferredOS os_type NOT NULL,
     developerId INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (developerId) REFERENCES developers (id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
