@@ -38,22 +38,31 @@ const getDevelopers = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const id = parseInt(req.params.id);
+
   const queryString: string = `
         SELECT
             de."id" "developerId",
-            de."name",
-            de."email",
-            di."developerSince",
-            di."preferredOS"
+            de."name" "developerName",
+            de."email" "developerEmail",
+            di."developerSince" "developerInfoDeveloperSince",
+            di."preferredOS" "developerInfoPreferredOS"
         FROM 
             developers de
         LEFT JOIN
-            developer_infos di ON de."id" = di."developerId";
+            developer_infos di ON di."developerId" = de."id"
+        WHERE
+            de.id = $1
     `;
 
-  const queryResult: QueryResult<IDeveloper> = await client.query(queryString);
+  const queryConfig = {
+    text: queryString,
+    values: [id],
+  };
 
-  return res.json(queryResult.rows);
+  const queryResult: QueryResult<IDeveloper> = await client.query(queryConfig);
+
+  return res.json(queryResult.rows[0]);
 };
 
 const updateDeveloper = async (

@@ -80,7 +80,7 @@ const verifyInfoExists = async (
       FROM
           developer_infos
       WHERE
-          develeprId=$1;
+          "developerId"=$1;
       `;
 
   const queryConfig: QueryConfig = {
@@ -100,12 +100,12 @@ const verifyInfoExists = async (
 };
 
 const verifyOS = async (req: Request, res: Response, next: NextFunction) => {
-  const { preferedOS } = req.body;
+  const { preferredOS } = req.body;
 
   if (
-    preferedOS === "Windows" ||
-    preferedOS === "Linux" ||
-    preferedOS === "MacOS"
+    preferredOS == "Windows" ||
+    preferredOS == "Linux" ||
+    preferredOS == "MacOS"
   ) {
     return next();
   }

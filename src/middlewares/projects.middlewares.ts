@@ -116,7 +116,7 @@ const verifyTechInProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { id } = res.locals.id;
+  const id: number = res.locals.id;
 
   const queryString: string = `
     SELECT
@@ -124,7 +124,7 @@ const verifyTechInProject = async (
     FROM
         projects_technologies
     WHERE
-      technologyId=$1;
+      "technologyId"=$1;
   `;
 
   const queryConfig: QueryConfig = {
@@ -188,10 +188,43 @@ const verifyTechFromParams = async (
   return next();
 };
 
+const ensureTechExistInProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id: number = res.locals.id;
+
+  const queryString: string = `
+    SELECT
+        *
+    FROM
+        projects_technologies
+    WHERE
+      "technologyId"=$1;
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [id],
+  };
+
+  const queryResult: QueryResult<IProject> = await client.query(queryConfig);
+
+  if (queryResult.rowCount === 0) {
+    return res.status(400).json({
+      message: "Technology not related to the project.",
+    });
+  }
+
+  return next();
+};
+
 export {
   verifyDeveloper,
   verifyProject,
   verifyTechFromBody,
   verifyTechInProject,
   verifyTechFromParams,
+  ensureTechExistInProject,
 };

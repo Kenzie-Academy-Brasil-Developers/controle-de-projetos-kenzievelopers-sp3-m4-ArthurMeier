@@ -32,24 +32,22 @@ const createProject = async (
 const getProjects = async (req: Request, res: Response): Promise<Response> => {
   const queryString: string = `
         SELECT
-            pj."projectId",
-            pj."Name",
-            pj."Description",
-            pj."EstimatedTime",
-            pj."Repository"
-            pj."StartDate"
-            pj."EndDate"
-            pj."DeveloperId"
-            pt."technologyId"
-            tc."technologyName"
+            pj."id" "projectId",
+            pj."name" "projectName",
+            pj."description" "projectDescription",
+            pj."estimatedTime" "projectEstimatedTime",
+            pj."repository" "projectRepository",
+            pj."startDate" "projectStartDate",
+            pj."endDate" "projectEndDate",
+            pj."developerId" "projectDeveloperId",
+            pt."technologyId",
+            tc."name" "technologyName"
         FROM 
             projects pj
         JOIN
-            projects_technologies pt ON pt."projectId" = pj."id";
+            projects_technologies pt ON pt."projectId" = pj."id"
         JOIN
-            technoligies tc ON pt."technologyId" = tc."id"
-        WHERE
-            pt."projectId" = $1;
+            technologies tc ON pt."technologyId" = tc."id";
     `;
 
   const queryResult: QueryResult<IProject> = await client.query(queryString);
@@ -132,23 +130,23 @@ const postTechInProject = async (
 
   const projectQuery = format(
     `SELECT 
-      pj."projectId", 
-      pj."projectName", 
-      pj."projectDescription", 
-      pj."projectEstimatedTime", 
-      pj."projectRepository", 
-      pj."projectStartDate", 
-      pj."projectEndDate", 
-      tc."technologyId", 
-      tc."technologyName" 
+      pj."id" "projectId", 
+      pj."name" "projectName", 
+      pj."description" "projectDescription", 
+      pj."estimatedTime" "projectEstimatedTime", 
+      pj."repository" "projectRepository", 
+      pj."startDate" "projectStartDate", 
+      pj."endDate" "projectEndDate", 
+      pt."technologyId", 
+      tc."name" "technologyName" 
     FROM 
       projects pj 
     JOIN 
-      projects_technologies pt ON pt."projectId" = pj."projectId" 
+      projects_technologies pt ON pt."projectId" = pj."id" 
     JOIN 
-      technologies tc ON pt."technologyId" = tc."technologyId"
+      technologies tc ON pt."technologyId" = tc."id"
     WHERE 
-      pj."projectId" = %L AND tc."technologyId" = %L`,
+      pj."id" = %L AND tc."id" = %L;`,
     addTechResult.rows[0].projectId,
     addTechResult.rows[0].technologyId
   );
@@ -161,13 +159,13 @@ const deleteTechInProject = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { id } = res.locals.id;
+  const id: number = parseInt(res.locals.id);
 
   const queryString: string = `
     DELETE FROM
       projects_technologies
     WHERE
-      technologyId=$1;
+      "technologyId"=$1;
   `;
 
   const queryConfig: QueryConfig = {

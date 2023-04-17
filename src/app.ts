@@ -22,6 +22,7 @@ import {
   updateProject,
 } from "./logics/projects.logics";
 import {
+  ensureTechExistInProject,
   verifyDeveloper,
   verifyProject,
   verifyTechFromBody,
@@ -60,7 +61,7 @@ app.delete(
   "/projects/:id/technologies/:name",
   verifyProject,
   verifyTechFromParams,
-  verifyTechInProject,
+  ensureTechExistInProject,
   deleteTechInProject
 );
 
