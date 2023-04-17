@@ -24,8 +24,9 @@ import {
 import {
   verifyDeveloper,
   verifyProject,
+  verifyTechFromBody,
+  verifyTechFromParams,
   verifyTechInProject,
-  verifyTechnology,
 } from "./middlewares/projects.middlewares";
 
 const app: Application = express();
@@ -51,14 +52,14 @@ app.delete("/projects/:id", verifyProject, deleteProject);
 app.post(
   "/projects/:id/technologies",
   verifyProject,
-  verifyTechnology,
+  verifyTechFromBody,
   verifyTechInProject,
   postTechInProject
 );
 app.delete(
   "/projects/:id/technologies/:name",
   verifyProject,
-  verifyTechnology,
+  verifyTechFromParams,
   verifyTechInProject,
   deleteTechInProject
 );

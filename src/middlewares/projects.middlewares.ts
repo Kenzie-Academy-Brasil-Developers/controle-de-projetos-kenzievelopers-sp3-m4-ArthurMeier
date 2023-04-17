@@ -66,7 +66,7 @@ const verifyProject = async (
   return next();
 };
 
-const verifyTechnology = async (
+const verifyTechFromBody = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -138,16 +138,60 @@ const verifyTechInProject = async (
     return next();
   }
 
-  return res
-    .status(409)
-    .json({
-      message: "This technology is already associated with the project",
+  return res.status(409).json({
+    message: "This technology is already associated with the project",
+  });
+};
+
+const verifyTechFromParams = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { name } = req.params;
+
+  const queryString: string = `
+    SELECT
+        *
+    FROM
+        technologies
+    WHERE
+        name=$1;
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [name],
+  };
+
+  const queryResult: QueryResult<TTechnology> = await client.query(queryConfig);
+
+  if (queryResult.rowCount === 0) {
+    return res.status(400).json({
+      message: "Technology not supported.",
+      options: [
+        "JavaScript",
+        "Python",
+        "React",
+        "Express.js",
+        "HTML",
+        "CSS",
+        "Django",
+        "PostgreSQL",
+        "MongoDB",
+      ],
     });
+  }
+
+  res.locals.id = queryResult.rows[0].id;
+
+  return next();
 };
 
 export {
   verifyDeveloper,
   verifyProject,
-  verifyTechnology,
+  verifyTechFromBody,
   verifyTechInProject,
+  verifyTechFromParams,
 };
