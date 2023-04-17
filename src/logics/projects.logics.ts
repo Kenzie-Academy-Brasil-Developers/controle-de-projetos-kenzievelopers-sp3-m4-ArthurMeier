@@ -114,16 +114,47 @@ const postTechInProject = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  // const projectId: number = parseInt(req.params.id);
-  // const { name } = req.body;
-  // const queryString: string = format(`
-  //   INSERT INTO
-  //     projects_technologies
-  //     (%I)
-  //     VALUES
-  //     (%L)
-  //   RETURNING *;
-  // `);
+  const projectId: number = parseInt(req.params.id);
+  const techId = res.locals.id;
+
+  const addTechQuery = format(
+    `
+    INSERT INTO 
+        projects_technologies ("addedIn", "technologyId", "projectId") 
+    VALUES 
+        (NOW(), %L, %L) 
+      RETURNING *;
+      `,
+    techId,
+    projectId
+  );
+  const addTechResult = await client.query(addTechQuery);
+
+  const projectQuery = format(
+    `SELECT 
+      pj."projectId", 
+      pj."projectName", 
+      pj."projectDescription", 
+      pj."projectEstimatedTime", 
+      pj."projectRepository", 
+      pj."projectStartDate", 
+      pj."projectEndDate", 
+      tc."technologyId", 
+      tc."technologyName" 
+    FROM 
+      projects pj 
+    JOIN 
+      projects_technologies pt ON pt."projectId" = pj."projectId" 
+    JOIN 
+      technologies tc ON pt."technologyId" = tc."technologyId"
+    WHERE 
+      pj."projectId" = %L AND tc."technologyId" = %L`,
+    addTechResult.rows[0].projectId,
+    addTechResult.rows[0].technologyId
+  );
+  const projectResult = await client.query(projectQuery);
+
+  return res.status(201).json(projectResult.rows[0]);
 };
 
 const deleteTechInProject = async (
