@@ -16,12 +16,16 @@ import {
 import {
   createProject,
   deleteProject,
+  deleteTechInProject,
   getProjects,
+  postTechInProject,
   updateProject,
 } from "./logics/projects.logics";
 import {
   verifyDeveloper,
   verifyProject,
+  verifyTechInProject,
+  verifyTechnology,
 } from "./middlewares/projects.middlewares";
 
 const app: Application = express();
@@ -44,7 +48,19 @@ app.post("/projects", verifyDeveloper, createProject);
 app.get("/projects/:id", verifyProject, getProjects);
 app.patch("/projects/:id", verifyProject, verifyDeveloper, updateProject);
 app.delete("/projects/:id", verifyProject, deleteProject);
-app.post("/projects/:id");
-app.delete("/projects/:id/technologies/:name");
+app.post(
+  "/projects/:id/technologies",
+  verifyProject,
+  verifyTechnology,
+  verifyTechInProject,
+  postTechInProject
+);
+app.delete(
+  "/projects/:id/technologies/:name",
+  verifyProject,
+  verifyTechnology,
+  verifyTechInProject,
+  deleteTechInProject
+);
 
 export default app;

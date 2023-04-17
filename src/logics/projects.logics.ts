@@ -32,7 +32,7 @@ const createProject = async (
 const getProjects = async (req: Request, res: Response): Promise<Response> => {
   const queryString: string = `
         SELECT
-            pj."projectId" "developerId",
+            pj."projectId",
             pj."projectName",
             pj."projectDescription",
             pj."projectEstimatedTime",
@@ -40,8 +40,8 @@ const getProjects = async (req: Request, res: Response): Promise<Response> => {
             pj."projectStartDate"
             pj."projectEndDate"
             pj."projectDeveloperId"
-            di."technologyId "
-            di."technologyName "
+            pt."technologyId"
+            tc."technologyName"
         FROM 
             projects pj
         JOIN
@@ -110,4 +110,50 @@ const deleteProject = async (
   return res.status(204).send();
 };
 
-export { createProject, getProjects, updateProject, deleteProject };
+const postTechInProject = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  // const projectId: number = parseInt(req.params.id);
+  // const { name } = req.body;
+  // const queryString: string = format(`
+  //   INSERT INTO
+  //     projects_technologies
+  //     (%I)
+  //     VALUES
+  //     (%L)
+  //   RETURNING *;
+  // `);
+};
+
+const deleteTechInProject = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = res.locals.id;
+
+  const queryString: string = `
+    DELETE FROM
+      projects_technologies
+    WHERE
+      technologyId=$1;
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [id],
+  };
+
+  await client.query(queryConfig);
+
+  return res.status(204).send();
+};
+
+export {
+  createProject,
+  getProjects,
+  updateProject,
+  deleteProject,
+  postTechInProject,
+  deleteTechInProject,
+};
